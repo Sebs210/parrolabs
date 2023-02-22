@@ -34,10 +34,17 @@ Para nuestro sistema de ventas, podríamos tener los siguientes servicios:
 Cada uno de estos servicios podría tener una implementación que haga uso de los repositorios para interactuar con la base de datos. Por ejemplo, el CustomerService podría tener una implementación que haga uso del CustomerRepository para realizar las operaciones de CRUD en la base de datos. Además, estos servicios podrían tener métodos adicionales que utilicen la lógica de negocio para realizar otras tareas específicas de la aplicación.
 
 
-# La clase OrderController define cinco puntos finales:
+# La clase OrderController define cinco metodos de petición HTTP:
 
 * POST /orders crea un nuevo pedido con la información proporcionada en el cuerpo de la solicitud.
 * PUT /orders/{orderId} actualiza un pedido existente con la información proporcionada en el cuerpo de la solicitud.
 * DELETE /orders/{orderId} cancela un pedido existente.
 * GET /pedidos/{orderId} recupera los detalles de un pedido específico.
 * GET /orders recupera una lista de todos los pedidos.
+
+# La clase CustomerController define cuatro métodos de petición HTTP:
+
+* GET /api/customers/{id}: Recupera un cliente con un ID específico.
+* POST /api/clientes/registro: Registra un nuevo cliente.
+* PUT /api/clientes/{id}: Actualiza un cliente con un ID específico.
+* DELETE /api/clientes/{id}: Elimina un cliente con un ID específico.
