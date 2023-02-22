@@ -3,6 +3,8 @@ package com.example.parrolabs.entity;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.Id;
 
+import java.util.List;
+
 @Entity
 @Table(name = "customers")
 public class Customer {
@@ -22,12 +24,15 @@ public class Customer {
 
     @Column(nullable = false)
     private String lastName;
+    private String name;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "shipping_address_id", referencedColumnName = "id")
     private ShippingAddress shippingAddress;
-
     public Customer() {}
+
+    private List<ShippingAddress> shippingAddresses;
+
 
     public Customer(String email, String phone, String firstName, String lastName, ShippingAddress shippingAddress) {
         this.email = email;
@@ -36,6 +41,7 @@ public class Customer {
         this.lastName = lastName;
         this.shippingAddress = shippingAddress;
     }
+
 
     public Long getId() {
         return id;
@@ -60,7 +66,9 @@ public class Customer {
     public void setPhone(String phone) {
         this.phone = phone;
     }
-
+    public String getName() {
+        return name;
+    }
     public String getFirstName() {
         return firstName;
     }
@@ -69,21 +77,14 @@ public class Customer {
         this.firstName = firstName;
     }
 
-    public String getLastName() {
-        return lastName;
+    public List<ShippingAddress> getShippingAddresses() {
+        return this.shippingAddresses;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public ShippingAddress getShippingAddress() {
-        return shippingAddress;
+    public void setName(String name) {
+        this.name = name;
     }
 
 
 
-    public void setShippingAddress(ShippingAddress shippingAddress) {
-        this.shippingAddress = shippingAddress;
-    }
 }

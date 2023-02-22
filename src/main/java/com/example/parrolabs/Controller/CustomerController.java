@@ -13,58 +13,33 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/customers")
 public class CustomerController {
-    private CustomerService customerService;
 
     @Autowired
-    public CustomerController(CustomerService customerService) {
-        this.customerService = customerService;
-    }
-
-    @GetMapping("")
-    public List<Customer> getAllCustomers() {
-        return customerService.getAllCustomers();
-    }
+    private CustomerService customerService;
 
     @GetMapping("/{id}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
-        Optional<Customer> customer = customerService.getCustomerById(id);
-        if (customer.isPresent()) {
-            return ResponseEntity.ok(customer.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Customer customer = customerService.getCustomerById(id);
+        return ResponseEntity.ok(customer);
     }
 
-    @PostMapping("")
-    public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
-        Optional<Customer> existingCustomer = customerService.getCustomerByEmailOrPhone(customer.getEmail(), customer.getPhone());
-        if (existingCustomer.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        } else {
-            Customer newCustomer = customerService.createCustomer(customer);
-            return ResponseEntity.status(HttpStatus.CREATED).body(newCustomer);
-        }
+    @PostMapping("/register")
+    public ResponseEntity<Customer> registerCustomer(@RequestBody Customer customer) {
+        Customer createdCustomer = customerService.registerCustomer(customer);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdCustomer);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @RequestBody Customer customer) {
-        Optional<Customer> existingCustomer = customerService.getCustomerById(id);
-        if (existingCustomer.isPresent()) {
-            Customer updatedCustomer = customerService.updateCustomer(id, customer);
-            return ResponseEntity.ok(updatedCustomer);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Customer updatedCustomer = customerService.updateCustomer(id, customer);
+        return ResponseEntity.ok(updatedCustomer);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
-        if (customerService.getCustomerById(id).isPresent()) {
-            customerService.deleteCustomerById(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
+        customerService.deleteCustomer(id);
+        return ResponseEntity.noContent().build();
     }
 }
+
 

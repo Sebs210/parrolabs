@@ -28,6 +28,7 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "shipping_address_id", nullable = false)
     private ShippingAddress shippingAddress;
+    private OrderStatus status;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_type")
@@ -39,6 +40,12 @@ public class Order {
     public Order() {
     }
 
+
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
     public Order(String orderNumber, LocalDate date, Customer customer, ShippingAddress shippingAddress, PaymentType paymentType, List<OrderItem> orderItems) {
         this.orderNumber = orderNumber;
         this.date = date;
@@ -46,6 +53,9 @@ public class Order {
         this.shippingAddress = shippingAddress;
         this.paymentType = paymentType;
         this.orderItems = orderItems;
+    }
+    public OrderStatus getStatus() {
+        return status;
     }
 
     // Getters and Setters
@@ -92,6 +102,7 @@ public class Order {
     public PaymentType getPaymentType() {
         return paymentType;
     }
+
 
     public void setPaymentType(PaymentType paymentType) {
         this.paymentType = paymentType;

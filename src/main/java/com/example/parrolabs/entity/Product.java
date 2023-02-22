@@ -23,11 +23,18 @@ public class Product {
     @Column(name = "weight")
     private double weight;
 
+    private boolean used;
+
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
+    private String name;
 
     public Product() {}
 
+
+    public void setUsed(boolean used) {
+        this.used = used;
+    }
     public Product(String description, double price, double weight) {
         this.description = description;
         this.price = price;
@@ -61,20 +68,11 @@ public class Product {
         this.price = price;
     }
 
-    public double getWeight() {
-        return weight;
+    public void setName(String name) {
+        this.name = name;
     }
-
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
-
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
-    }
-
-    public void setOrderItems(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
+    public String getName() {
+        return name;
     }
 }
 

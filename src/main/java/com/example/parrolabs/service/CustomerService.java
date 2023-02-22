@@ -8,85 +8,79 @@ import com.example.parrolabs.entity.ShippingAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CustomerService {
 
-    private final CustomerRepository customerRepository;
-    private final ShippingAddressRepository shippingAddressRepository;
-
     @Autowired
-    public CustomerService(CustomerRepository customerRepository, ShippingAddressRepository shippingAddressRepository) {
-        this.customerRepository = customerRepository;
-        this.shippingAddressRepository = shippingAddressRepository;
+    private CustomerRepository customerRepository;
+
+    public List<Customer> getAllCustomers() {
+        return customerRepository.findAll();
     }
 
-    public Customer addCustomer(Customer customer) {
-        if (customer.getPhone() != null && customerRepository.findByPhone(customer.getPhone()).isPresent()) {
-            throw new IllegalArgumentException("Phone number already exists.");
-        }
-
-        if (customer.getEmail() != null && customerRepository.findByEmail(customer.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email address already exists.");
-        }
-
-        return customerRepository.save(customer);
+    public Customer getCustomerById(Long id) {
+        return customerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer", "id", id));
     }
 
-    public Customer updateCustomer(Customer customer) {
-        if (customer.getId() == null) {
-            throw new IllegalArgumentException("Customer ID is required.");
-        }
-
-        if (customer.getPhone() != null) {
-            Optional<Customer> existingCustomer = customerRepository.findByPhone(customer.getPhone());
-            if (existingCustomer.isPresent() && !existingCustomer.get().getId().equals(customer.getId())) {
-                throw new IllegalArgumentException("Phone number already exists.");
-            }
-        }
-
-        if (customer.getEmail() != null) {
-            Optional<Customer> existingCustomer = customerRepository.findByEmail(customer.getEmail());
-            if (existingCustomer.isPresent() && !existingCustomer.get().getId().equals(customer.getId())) {
-                throw new IllegalArgumentException("Email address already exists.");
-            }
-        }
-
+    public Customer registerCustomer(Customer customer) {
         return customerRepository.save(customer);
     }
 
     public void deleteCustomer(Long id) {
-        Optional<Customer> customer = customerRepository.findById(id);
-        if (customer.isPresent()) {
-            if (!customer.get().getOrders().isEmpty()) {
-                throw new IllegalArgumentException("Cannot delete customer because they have existing orders.");
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer", "id", id));
+
+        customerRepository.delete(customer);
+    }
+
+    public Customer updateCustomer(Long id, Customer updatedCustomer) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer", "id", id));
+
+        // Update the customer's name, email and phone number
+        customer.setName(updatedCustomer.getName());
+        customer.setEmail(updatedCustomer.getEmail());
+        customer.setPhone(updatedCustomer.getPhone());
+
+        // Update the customer's shipping addresses
+        List<ShippingAddress> updatedShippingAddresses = updatedCustomer.getShippingAddresses();
+        List<ShippingAddress> shippingAddresses = new ArrayList<>();
+
+        for (ShippingAddress updatedShippingAddress : updatedShippingAddresses) {
+            Optional<ShippingAddress> shippingAddressOptional = customer.getShippingAddressById(updatedShippingAddress.getId());
+
+            if (shippingAddressOptional.isPresent()) {
+                // Update the existing shipping address
+                ShippingAddress shippingAddress = shippingAddressOptional.get();
+                shippingAddress.setCity(updatedShippingAddress.getCity());
+                shippingAddress.setState(updatedShippingAddress.getState());
+                shippingAddress.setZipCode(updatedShippingAddress.getZipCode());
+                shippingAddress.setCountry(updatedShippingAddress.getCountry());
+
+                shippingAddresses.add(shippingAddress);
+            } else {
+                // Add a new shipping address
+                ShippingAddress newShippingAddress = new ShippingAddress();
+                newShippingAddress.setStreetAddress(updatedShippingAddress.getStreetAddress());
+                newShippingAddress.setCity(updatedShippingAddress.getCity());
+                newShippingAddress.setState(updatedShippingAddress.getState());
+                newShippingAddress.setZipCode(updatedShippingAddress.getZipCode());
+                newShippingAddress.setCountry(updatedShippingAddress.getCountry());
+                newShippingAddress.setCustomer(customer);
+
+                shippingAddresses.add(newShippingAddress);
             }
-
-            customerRepository.deleteById(id);
-        } else {
-            throw new ResourceNotFoundException("Customer not found.");
         }
-    }
 
-    public Customer findCustomerById(Long id) {
-        return customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer not found."));
-    }
+        customer.setShippingAddresses(shippingAddresses);
 
-    public Customer findCustomerByPhone(String phone) {
-        return customerRepository.findByPhone(phone).orElseThrow(() -> new ResourceNotFoundException("Customer not found."));
-    }
-
-    public List<Customer> findAllCustomers() {
-        return customerRepository.findAll();
-    }
-
-    public List<ShippingAddress> findShippingAddressesByCustomerId(Long id) {
-        return shippingAddressRepository.findByCustomerId(id);
-    }
-
-    public ShippingAddress findShippingAddressById(Long id) {
-        return shippingAddressRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Shipping address not found."));
+        // Save the updated customer
+        return customerRepository.save(customer);
     }
 }
+

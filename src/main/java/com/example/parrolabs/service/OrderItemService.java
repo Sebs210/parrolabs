@@ -2,9 +2,13 @@ package com.example.parrolabs.service;
 
 import com.example.parrolabs.Interface.OrderItemRepository;
 import com.example.parrolabs.Utils.ResourceNotFoundException;
+import com.example.parrolabs.entity.Order;
 import com.example.parrolabs.entity.OrderItem;
+import com.example.parrolabs.entity.Product;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -56,5 +60,16 @@ public class OrderItemService {
         orderService.updateOrder(order);
         orderItemRepository.delete(orderItem);
     }
+
+    public void deleteOrderItemsByOrderId(Long orderId) {
+        Order order = orderService.getOrderById(orderId);
+        List<OrderItem> orderItems = order.getOrderItems();
+        for (OrderItem orderItem : orderItems) {
+            orderItemRepository.delete(orderItem);
+        }
+    }
+
+
+
 }
 

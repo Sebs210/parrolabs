@@ -81,10 +81,21 @@ public class OrderService {
         return savedOrder;
     }
 
-    public void deleteOrder(Long id) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
+    public void cancelOrder(Long id) {
+        Order order = getOrderById(id);
 
-        orderRepository.delete(order);
+        if (order.getStatus() != OrderStatus.PLACED) {
+            throw new ProductAlreadyUsedException("Order with ID " + id + " cannot be cancelled because it is not in 'PLACED' status.");
+        }
+
+        order.setStatus(OrderStatus.CANCELLED);
+        orderRepository.save(order);
+
+        // Set the products as unused
+        for (OrderItem orderItem : order.getOrderItems()) {
+            Product product = productRepository.findById(orderItem.getProduct().getId()).get();
+            product.setUsed(false);
+            productRepository.save(product);
+        }
     }
 }
