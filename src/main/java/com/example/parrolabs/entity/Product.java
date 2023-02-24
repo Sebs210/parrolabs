@@ -1,7 +1,6 @@
 package com.example.parrolabs.entity;
 
 import jakarta.persistence.*;
-import org.springframework.data.annotation.Id;
 
 import java.util.List;
 
@@ -12,7 +11,7 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @Column(name = "description")
     private String description;
@@ -42,11 +41,11 @@ public class Product {
     }
 
     public int getId() {
-        return id;
+        return Math.toIntExact(id);
     }
 
     public void setId(int id) {
-        this.id = id;
+        this.id = (long) id;
     }
 
     public String getDescription() {
@@ -73,6 +72,13 @@ public class Product {
     }
     public String getName() {
         return name;
+    }
+
+    public Object getStock() {
+        return null;
+    }
+
+    public void setStock(Object stock) {
     }
 }
 

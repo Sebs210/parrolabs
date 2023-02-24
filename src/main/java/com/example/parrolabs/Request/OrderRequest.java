@@ -1,19 +1,49 @@
 package com.example.parrolabs.Request;
 
+import com.example.parrolabs.entity.Order;
+import com.example.parrolabs.entity.OrderItem;
+import com.example.parrolabs.entity.ShippingAddress;
+
 import java.util.List;
 
-public class OrderRequest {
+public class OrderRequest extends Order {
     private Long customerId;
     private Long shippingAddressId;
-    private List<OrderItemRequest> orderItems;
+    private List<OrderItem> orderItems;
 
-    public OrderRequest(Long customerId, Long shippingAddressId, List<OrderItemRequest> orderItems) {
+    private ShippingAddress shippingAddress;
+
+
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
         this.customerId = customerId;
+    }
+
+    public Long getShippingAddressId() {
+        return shippingAddressId;
+    }
+
+    public void setShippingAddressId(Long shippingAddressId) {
         this.shippingAddressId = shippingAddressId;
+    }
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
         this.orderItems = orderItems;
     }
 
-    public OrderRequest() {}
+    public void setShippingAddress(ShippingAddress shippingAddress) {
+        this.setShippingAddress(shippingAddress);
+    }
 
-
+    public Object getTotalValue() {
+        return null;
+    }
 }

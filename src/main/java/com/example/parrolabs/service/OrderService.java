@@ -1,10 +1,13 @@
 package com.example.parrolabs.service;
 
-import com.example.parrolabs.Interface.CustomerRepository;
-import com.example.parrolabs.Interface.OrderRepository;
-import com.example.parrolabs.Interface.ProductRepository;
+import com.example.parrolabs.Repository.CustomerRepository;
+import com.example.parrolabs.Repository.OrderRepository;
+import com.example.parrolabs.Repository.ProductRepository;
+import com.example.parrolabs.Request.OrderRequest;
+import com.example.parrolabs.Utils.EmptyOrderException;
 import com.example.parrolabs.Utils.ProductAlreadyUsedException;
 import com.example.parrolabs.Utils.ResourceNotFoundException;
+import com.example.parrolabs.dto.OrderDto;
 import com.example.parrolabs.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,30 +37,24 @@ public class OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
     }
 
-    public Order createOrder(Order order) {
+    public Order createOrder(Order order) throws EmptyOrderException {
         // Validate customer and shipping address
         Customer customer = customerRepository.findById(order.getCustomer().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Customer", "id", order.getCustomer().getId()));
-        ShippingAddress shippingAddress = customer.getShippingAddressById(order.getShippingAddress().getId())
+        ShippingAddress shippingAddress = (ShippingAddress) customer.getShippingAddressById(order.getShippingAddress().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Shipping Address", "id", order.getShippingAddress().getId()));
 
         // Validate order items
         BigDecimal totalValue = BigDecimal.ZERO;
         for (OrderItem orderItem : order.getOrderItems()) {
-            Product product = productRepository.findById(orderItem.getProduct().getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Product", "id", orderItem.getProduct().getId()));
+            Product product = productRepository.findById((long) orderItem.getProduct().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Product", "id", (long) orderItem.getProduct().getId()));
 
             // Check that the product hasn't been used in an order before
             if (product.isUsed()) {
                 throw new ProductAlreadyUsedException("Product with ID " + product.getId() + " has already been used in an order and cannot be deleted.");
             }
 
-            // Calculate the order item value
-            BigDecimal orderItemValue = product.getPrice().multiply(new BigDecimal(orderItem.getQuantity()));
-            orderItem.setValue(orderItemValue);
-
-            // Add the order item value to the total order value
-            totalValue = totalValue.add(orderItemValue);
         }
 
         // Check that the order contains at least one order item
@@ -73,7 +70,7 @@ public class OrderService {
 
         // Set the product as used
         for (OrderItem orderItem : savedOrder.getOrderItems()) {
-            Product product = productRepository.findById(orderItem.getProduct().getId()).get();
+            Product product = productRepository.findById((long) orderItem.getProduct().getId()).get();
             product.setUsed(true);
             productRepository.save(product);
         }
@@ -93,9 +90,26 @@ public class OrderService {
 
         // Set the products as unused
         for (OrderItem orderItem : order.getOrderItems()) {
-            Product product = productRepository.findById(orderItem.getProduct().getId()).get();
+            Product product = productRepository.findById((long) orderItem.getProduct().getId()).get();
             product.setUsed(false);
             productRepository.save(product);
         }
+    }
+    public OrderDto updateOrder(Long orderId, OrderRequest orderRequest)
+    {
+        Order order = getOrderById(orderId);
+        order.setOrderNumber(orderRequest.getOrderNumber());
+        order.setDate(orderRequest.getDate());
+        order.setCustomer(orderRequest.getCustomer());
+        order.setShippingAddress(orderRequest.getShippingAddress());
+        order.setPaymentType(orderRequest.getPaymentType());
+        order.setOrderItems(orderRequest.getOrderItems());
+        order.setTotalValue((BigDecimal) orderRequest.getTotalValue());
+        order.setStatus(orderRequest.getStatus());
+        orderRepository.save(order);
+        return order;
+    }
+
+    public void updateOrder(Order order) {
     }
 }

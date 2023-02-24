@@ -1,6 +1,6 @@
 package com.example.parrolabs.service;
 
-import com.example.parrolabs.Interface.OrderItemRepository;
+import com.example.parrolabs.Repository.OrderItemRepository;
 import com.example.parrolabs.Utils.ResourceNotFoundException;
 import com.example.parrolabs.entity.Order;
 import com.example.parrolabs.entity.OrderItem;
@@ -8,7 +8,6 @@ import com.example.parrolabs.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -25,12 +24,10 @@ public class OrderItemService {
     }
 
     public OrderItem createOrderItem(OrderItem orderItem) {
-        Product product = productService.getProductById(orderItem.getProduct().getId());
+        Product product = productService.getProductById((long) orderItem.getProduct().getId());
         Order order = orderService.getOrderById(orderItem.getOrder().getId());
         orderItem.setProduct(product);
         orderItem.setOrder(order);
-        BigDecimal price = product.getPrice().multiply(new BigDecimal(orderItem.getQuantity()));
-        orderItem.setPrice(price);
         order.getOrderItems().add(orderItem);
         orderService.updateOrder(order);
         return orderItemRepository.save(orderItem);
@@ -45,13 +42,6 @@ public class OrderItemService {
         return orderItemRepository.findAll();
     }
 
-    public OrderItem updateOrderItem(OrderItem orderItem) {
-        OrderItem existingOrderItem = getOrderItemById(orderItem.getId());
-        existingOrderItem.setQuantity(orderItem.getQuantity());
-        BigDecimal price = existingOrderItem.getProduct().getPrice().multiply(new BigDecimal(existingOrderItem.getQuantity()));
-        existingOrderItem.setPrice(price);
-        return orderItemRepository.save(existingOrderItem);
-    }
 
     public void deleteOrderItem(Long orderItemId) {
         OrderItem orderItem = getOrderItemById(orderItemId);

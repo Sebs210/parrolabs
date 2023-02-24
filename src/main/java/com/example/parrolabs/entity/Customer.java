@@ -1,9 +1,9 @@
 package com.example.parrolabs.entity;
 
 import jakarta.persistence.*;
-import org.springframework.data.annotation.Id;
 
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "customers")
@@ -11,6 +11,7 @@ public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -31,7 +32,6 @@ public class Customer {
     private ShippingAddress shippingAddress;
     public Customer() {}
 
-    private List<ShippingAddress> shippingAddresses;
 
 
     public Customer(String email, String phone, String firstName, String lastName, ShippingAddress shippingAddress) {
@@ -40,6 +40,19 @@ public class Customer {
         this.firstName = firstName;
         this.lastName = lastName;
         this.shippingAddress = shippingAddress;
+    }
+
+    public Customer(String name, String email, String phone) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+    }
+
+    public Customer(Long id, String name, String email, String phone) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
     }
 
 
@@ -69,22 +82,14 @@ public class Customer {
     public String getName() {
         return name;
     }
-    public String getFirstName() {
-        return firstName;
-    }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public List<ShippingAddress> getShippingAddresses() {
-        return this.shippingAddresses;
-    }
 
     public void setName(String name) {
         this.name = name;
     }
 
 
-
+    public Optional<Object> getShippingAddressById(Long id) {
+        return null;
+    }
 }

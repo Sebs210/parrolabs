@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/api/customers")
@@ -21,6 +21,12 @@ public class CustomerController {
     public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
         Customer customer = customerService.getCustomerById(id);
         return ResponseEntity.ok(customer);
+    }
+
+    @GetMapping("")
+    public ResponseEntity<List<Customer>> getAllCustomers() {
+        List<Customer> customers = customerService.getAllCustomers();
+        return ResponseEntity.ok(customers);
     }
 
     @PostMapping("/register")

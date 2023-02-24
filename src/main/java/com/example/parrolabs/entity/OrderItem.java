@@ -2,6 +2,8 @@ package com.example.parrolabs.entity;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+
 
 @Entity
 @Table(name = "order_items")
@@ -62,5 +64,10 @@ public class OrderItem {
     }
 
 
+    public void setPrice(BigDecimal price) {
+    }
+
+    public void setValue(BigDecimal orderItemValue) {
+    }
 }
 

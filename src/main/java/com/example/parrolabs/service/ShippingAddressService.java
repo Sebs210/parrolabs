@@ -1,7 +1,8 @@
 package com.example.parrolabs.service;
 
-import com.example.parrolabs.Interface.ShippingAddressRepository;
+import com.example.parrolabs.Repository.ShippingAddressRepository;
 import com.example.parrolabs.Utils.ResourceNotFoundException;
+import com.example.parrolabs.dto.ShippingAddressDto;
 import com.example.parrolabs.entity.ShippingAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,11 @@ public class ShippingAddressService {
         this.shippingAddressRepository = shippingAddressRepository;
     }
 
-    public ShippingAddress createShippingAddress(ShippingAddress shippingAddress) {
+    public ShippingAddress createShippingAddress(ShippingAddressDto shippingAddressDto) {
+        ShippingAddress shippingAddress = new ShippingAddress();
+        shippingAddress.setAddress(shippingAddressDto.getAddress());
+        shippingAddress.setCity(shippingAddressDto.getCity());
+        shippingAddress.setState(shippingAddressDto.getState());
         return shippingAddressRepository.save(shippingAddress);
     }
 
@@ -30,13 +35,11 @@ public class ShippingAddressService {
         return shippingAddressRepository.findAll();
     }
 
-    public ShippingAddress updateShippingAddress(Long id, ShippingAddress shippingAddressDetails) {
+    public ShippingAddress updateShippingAddress(Long id, ShippingAddressDto shippingAddressDetails) {
         ShippingAddress shippingAddress = getShippingAddressById(id);
         shippingAddress.setAddress(shippingAddressDetails.getAddress());
         shippingAddress.setCity(shippingAddressDetails.getCity());
         shippingAddress.setState(shippingAddressDetails.getState());
-        shippingAddress.setCountry(shippingAddressDetails.getCountry());
-        shippingAddress.setPostalCode(shippingAddressDetails.getPostalCode());
         return shippingAddressRepository.save(shippingAddress);
     }
 

@@ -1,6 +1,8 @@
 package com.example.parrolabs.entity;
 
 
+import com.example.parrolabs.dto.CustomerDto;
+import com.example.parrolabs.dto.OrderDto;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -10,7 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "orders")
-public class Order {
+public class Order extends OrderDto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,8 +32,8 @@ public class Order {
     private ShippingAddress shippingAddress;
     private OrderStatus status;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "payment_type")
+    @ManyToOne
+    @JoinColumn(name = "payment_type_id", nullable = false)
     private PaymentType paymentType;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
@@ -83,17 +85,6 @@ public class Order {
         this.date = date;
     }
 
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
-
-    public ShippingAddress getShippingAddress() {
-        return shippingAddress;
-    }
 
     public void setShippingAddress(ShippingAddress shippingAddress) {
         this.shippingAddress = shippingAddress;
@@ -144,5 +135,8 @@ public class Order {
                 ", paymentType=" + paymentType +
                 ", orderItems=" + orderItems +
                 '}';
+    }
+
+    public void setTotalValue(BigDecimal totalValue) {
     }
 }
