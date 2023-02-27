@@ -2,7 +2,7 @@ package com.example.parrolabs.entity;
 
 import jakarta.persistence.*;
 
-import java.util.List;
+
 import java.util.Optional;
 
 @Entity
@@ -55,6 +55,10 @@ public class Customer {
         this.phone = phone;
     }
 
+    public Customer(long l, Object firstName, Object lastName) {
+
+    }
+
 
     public Long getId() {
         return id;
@@ -92,4 +96,5 @@ public class Customer {
     public Optional<Object> getShippingAddressById(Long id) {
         return null;
     }
+
 }
